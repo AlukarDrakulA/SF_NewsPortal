@@ -1,0 +1,202 @@
+>>> from newsportal.models import *
+>>> u1 = User.objects.create_user(username='Max')
+>>> u2 = User.objects.create_user(username='Nik')
+>>> u1
+<User: Max>
+>>> u2
+<User: Nik>
+>>> a1=Author.objects.create(authorUser=u1)
+>>> a1
+<Author: Author object (1)>
+>>> a2=Author.objects.create(authorUser=u2)
+>>> a2
+<Author: Author object (2)>
+>>> Category.objects.create(name='IT')
+<Category: Category object (1)>
+>>> Category.objects.create(name='Economics')
+<Category: Category object (2)>
+>>> Category.objects.create(name='GameDev')
+<Category: Category object (3)>
+>>> Category.objects.create(name='FinTech')
+<Category: Category object (4)>
+>>> Post.objects.create(author=a1, categoryType='NW', title='some_IT_news_title', post='some_big_IT_news_text')
+<Post: Post object (1)>
+>>> Post.objects.get(id=1).title
+'some_IT_news_title'
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=1))
+>>> Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text')
+>>> Comment.objects.get(id=1).like()
+>>> Post.objects.create(author=a2, categoryType='AR', title='some_gamedev_article_title', post='some_big_gemede_article_text')
+<Post: Post object (2)>
+>>> Post.objects.create(author=a1, categoryType='AR', title='some_fintech_article_title', post='some_big_fintech_article_text')
+<Post: Post object (3)>
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=4))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=1))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=4))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=3))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=1))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=2))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=3))
+>>> Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text_2_byAuthor1toAuthor2')
+<Comment: Comment object (2)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=2).authorUser,  text='some_comment_text_2_byAuthor2toAuthor1')
+<Comment: Comment object (3)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text_4_byAuthor1toAuthor2')
+<Comment: Comment object (4)>
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=4).like()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Post.objects.get(id=1).dislike()
+>>> Post.objects.get(id=2).dislike()
+>>> Post.objects.get(id=3).dislike()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=1).like()
+>>> a1.update_rating()
+>>> a2.update_rating()
+>>> ra = Author.objects.order_by('-ratingAuthor')[:1]
+>>> for i in ra:
+...     i.ratingAuthor
+...     i.authorUser.username
+...
+10
+'Nik'
+>>> bp = Post.objects.order_by('-rating')[:1]
+>>> for i in bp:
+...     i.dateCreation
+...     i.author.authorUser.username
+...     i.rating
+...     i.title
+...     i.preview()
+...
+datetime.datetime(2022, 4, 30, 13, 22, 55, 681145, tzinfo=datetime.timezone.utc)
+'Nik'
+3
+'some_gamedev_article_title'
+'some_big_gemede_article_text...'
+>>> acbp = Comment.objects.filter(commentPost=2)
+>>> for i in acbp:
+...     i.dateCreation
+...     i.commentUser.username
+...     i.rating
+...     i.text
+...
+datetime.datetime(2022, 4, 30, 13, 30, 52, 33305, tzinfo=datetime.timezone.utc)
+'Max'
+1
+'some_comment_text_2_byAuthor1toAuthor2'
+
+-----------------------------------------------------------------------------------
+Комнады по пункта задания:
+1.Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+
+u1 = User.objects.create_user(username='Max')
+u2 = User.objects.create_user(username='Nik')
+
+2. Создать два объекта модели Author, связанные с пользователями.
+
+a1=Author.objects.create(authorUser=u1)
+a2=Author.objects.create(authorUser=u2)
+
+3.Добавить 4 категории в модель Category
+
+Category.objects.create(name='IT')
+Category.objects.create(name='Economics')
+Category.objects.create(name='GameDev')
+Category.objects.create(name='FinTech')
+
+4.Добавить 2 статьи и 1 новость.
+
+Post.objects.create(author=a1, categoryType='NW', title='some_IT_news_title', post='some_big_IT_news_text')
+Post.objects.create(author=a2, categoryType='AR', title='some_gamedev_article_title', post='some_big_gemede_article_text')
+Post.objects.create(author=a1, categoryType='AR', title='some_fintech_article_title', post='some_big_fintech_article_text')
+
+5.Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=1))
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=4))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=1))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=4))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=3))
+Post.objects.get(id=3).postCategory.add(Category.objects.get(id=1))
+Post.objects.get(id=3).postCategory.add(Category.objects.get(id=2))
+Post.objects.get(id=3).postCategory.add(Category.objects.get(id=3))
+
+6.Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text')
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text_2_byAuthor1toAuthor2')
+Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=2).authorUser,  text='some_comment_text_2_byAuthor2toAuthor1')
+Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=1).authorUser,  text='some_comment_text_4_byAuthor1toAuthor2')
+
+7.Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=4).like()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Post.objects.get(id=1).dislike()
+>>> Post.objects.get(id=2).dislike()
+>>> Post.objects.get(id=3).dislike()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=3).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=1).like()
+
+8.Обновить рейтинги пользователей.
+
+>>> a1.update_rating()
+>>> a2.update_rating()
+
+9.Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+ra = Author.objects.order_by('-ratingAuthor')[:1]
+>>> for i in ra:
+...     i.ratingAuthor
+...     i.authorUser.username
+...
+10
+'Nik'
+
+10.Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+
+bp = Post.objects.order_by('-rating')[:1]
+>>> for i in bp:
+...     i.dateCreation
+...     i.author.authorUser.username
+...     i.rating
+...     i.title
+...     i.preview()
+...
+datetime.datetime(2022, 4, 30, 13, 22, 55, 681145, tzinfo=datetime.timezone.utc)
+'Nik'
+3
+'some_gamedev_article_title'
+'some_big_gemede_article_text...'
+
+11.Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+acbp = Comment.objects.filter(commentPost=2)
+>>> for i in acbp:
+...     i.dateCreation
+...     i.commentUser.username
+...     i.rating
+...     i.text
+...
+datetime.datetime(2022, 4, 30, 13, 30, 52, 33305, tzinfo=datetime.timezone.utc)
+'Max'
+1
+'some_comment_text_2_byAuthor1toAuthor2'
